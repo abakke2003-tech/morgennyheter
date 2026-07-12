@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Morgennyheter</title>
+<!-- Hjem-skjerm / app-modus -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Morgennyheter">
+<meta name="theme-color" content="#0b5cad">
+<link rel="manifest" href='data:application/manifest+json,{"name":"Morgennyheter","short_name":"Nyheter","display":"standalone","background_color":"%23f4f6f9","theme_color":"%230b5cad","start_url":"."}'>
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230b5cad'/%3E%3Ctext x='50' y='68' font-size='50' text-anchor='middle' fill='white' font-family='sans-serif'%3E☀%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #f4f6f9; --card: #ffffff; --text: #1a2233; --muted: #5b6577;
+    --accent: #0b5cad; --tech: #0a7d5c; --border: #e1e6ee;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #12161f; --card: #1c222e; --text: #e8ecf3; --muted: #96a0b2;
+      --accent: #6aa9e8; --tech: #4fc39a; --border: #2a3242;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.45;
+    padding: calc(env(safe-area-inset-top, 0px) + 16px) 14px calc(env(safe-area-inset-bottom, 0px) + 40px);
+    max-width: 700px; margin: 0 auto;
+  }
+  header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  h1 { font-size: 1.5rem; letter-spacing: -0.4px; }
+  .dato { color: var(--muted); font-size: 0.9rem; margin-top: 2px; }
+  #refresh {
+    background: var(--accent); color: #fff; border: none; border-radius: 24px;
+    padding: 9px 16px; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  }
+  #refresh:active { opacity: 0.7; }
+  #status { color: var(--muted); font-size: 0.85rem; margin-bottom: 14px; }
+  section { margin-bottom: 26px; }
+  h2 {
+    font-size: 1.1rem; margin-bottom: 10px; padding-bottom: 4px;
+    border-bottom: 3px solid var(--accent); display: inline-block;
+  }
+  section.tech h2 { border-bottom-color: var(--tech); }
+  .kort {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 13px 15px; margin-bottom: 10px;
+  }
+  section.tech .kort { border-left: 4px solid var(--tech); }
+  .kort a { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.98rem; display: block; }
+  section.tech .kort a { color: var(--tech); }
+  .ingress { color: var(--text); font-size: 0.86rem; margin-top: 4px; }
+  .meta { color: var(--muted); font-size: 0.75rem; margin-top: 6px; }
+  .feil { color: #c0392b; font-size: 0.85rem; }
+  .eksterne { display: flex; gap: 10px; flex-wrap: wrap; }
+  .eksterne a {
+    background: var(--card); border: 1px solid var(--border); border-radius: 24px;
+    padding: 9px 16px; color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.88rem;
+  }
+  .spinner { text-align: center; color: var(--muted); padding: 30px 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>☀️ Morgennyheter</h1>
+    <div class="dato" id="dato"></div>
+  </div>
+  <button id="refresh" onclick="lastAlt()">Oppdater</button>
+</header>
+<div id="status"></div>
+<div id="innhold"><div class="spinner">Henter nyheter …</div></div>
+
+<section>
+  <h2>Uten RSS</h2>
+  <p class="meta" style="margin-bottom:8px">Budstikka og Morgenbladet kan ikke hentes automatisk — åpne direkte:</p>
+  <div class="eksterne">
+    <a href="https://www.budstikka.no/" target="_blank" rel="noopener">Budstikka →</a>
+    <a href="https://www.morgenbladet.no/" target="_blank" rel="noopener">Morgenbladet →</a>
+  </div>
+</section>
+
+<script>
+const KILDER = [
+  { navn: 'Aftenposten', url: 'https://www.aftenposten.no/rss' },
+  { navn: 'VG',          url: 'https://www.vg.no/rss/feed' },
+  { navn: 'DN',          url: 'https://services.dn.no/api/feed/rss/' },
+  { navn: 'Digi.no',     url: 'https://www.digi.no/rss', tech: true },
+];
+const TECH_ORD = /\b(ki|ai|kunstig intelligens|cyber|dataangrep|datainnbrudd|datasenter|hacker|hacking|it-|digitalisering|digital[et]?\b|teknologi|telekom|telenor|telia|chatgpt|openai|microsoft|apple|google|meta\b|programvare|skytjenest|personvern|nsm\b|svindel|phishing|løsepenge)/i;
+
+const fmtDato = () => new Date().toLocaleDateString('no-NO', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+document.getElementById('dato').textContent = fmtDato().charAt(0).toUpperCase() + fmtDato().slice(1);
+
+function fmtTid(pd) { // "2026-07-12 12:28:29" (norsk lokaltid fra rss2json)
+  if (!pd) return '';
+  const [d, t] = pd.split(' ');
+  if (!d || !t) return pd;
+  const idag = new Date().toISOString() >= d; // grov sjekk
+  const kl = t.slice(0, 5);
+  const iDagStr = new Date().getFullYear() + '-' + String(new Date().getMonth()+1).padStart(2,'0') + '-' + String(new Date().getDate()).padStart(2,'0');
+  return d === iDagStr ? 'Kl. ' + kl : d.split('-').reverse().slice(0,2).join('.') + '. kl. ' + kl;
+}
+const rens = s => { const el = document.createElement('div'); el.innerHTML = s || ''; return (el.textContent || '').trim(); };
+
+async function hent(kilde) {
+  const api = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(kilde.url);
+  const r = await fetch(api, { signal: AbortSignal.timeout(20000) });
+  const j = await r.json();
+  if (j.status !== 'ok') throw new Error(j.message || 'Feil fra rss2json');
+  return j.items.filter(i => i.title && i.title.length > 3).map(i => ({
+    t: rens(i.title), u: i.link, d: rens(i.description).slice(0, 180), p: i.pubDate
+  }));
+}
+
+function kortHtml(sak) {
+  return '<article class="kort"><a href="' + sak.u + '" target="_blank" rel="noopener">' + sak.t + '</a>'
+    + (sak.d ? '<p class="ingress">' + sak.d + '</p>' : '')
+    + '<p class="meta">' + (sak.kilde ? sak.kilde + ' · ' : '') + fmtTid(sak.p) + '</p></article>';
+}
+
+function render(resultater) {
+  let html = '';
+  // Tech-fokus: alt fra Digi + nøkkelord-treff fra andre
+  const tech = [];
+  resultater.forEach(r => {
+    if (r.feil) return;
+    r.saker.forEach(s => {
+      if (r.kilde.tech || TECH_ORD.test(s.t + ' ' + s.d)) tech.push({ ...s, kilde: r.kilde.navn });
+    });
+  });
+  html += '<section class="tech"><h2>🔐 Tech-fokus</h2>';
+  html += tech.length ? tech.slice(0, 8).map(kortHtml).join('') : '<p class="meta">Ingen tech-saker akkurat nå.</p>';
+  html += '</section>';
+
+  resultater.forEach(r => {
+    html += '<section><h2>' + r.kilde.navn + '</h2>';
+    html += r.feil ? '<p class="feil">Kunne ikke hente: ' + r.feil + '</p>'
+                   : r.saker.slice(0, 5).map(kortHtml).join('');
+    html += '</section>';
+  });
+  document.getElementById('innhold').innerHTML = html;
+}
+
+async function lastAlt() {
+  const status = document.getElementById('status');
+  status.textContent = 'Oppdaterer …';
+  const resultater = await Promise.all(KILDER.map(async k => {
+    try { return { kilde: k, saker: await hent(k) }; }
+    catch (e) { return { kilde: k, feil: e.message }; }
+  }));
+  const okAntall = resultater.filter(r => !r.feil).length;
+  if (okAntall > 0) {
+    render(resultater);
+    try { localStorage.setItem('nyheter', JSON.stringify({ tid: Date.now(), resultater })); } catch (e) {}
+    status.textContent = 'Oppdatert ' + new Date().toLocaleTimeString('no-NO', { hour: '2-digit', minute: '2-digit' })
+      + (okAntall < KILDER.length ? ' (' + (KILDER.length - okAntall) + ' kilde(r) feilet)' : '');
+  } else {
+    const cache = lesCache();
+    if (cache) {
+      render(cache.resultater);
+      status.textContent = 'Frakoblet — viser lagrede nyheter fra ' + new Date(cache.tid).toLocaleString('no-NO');
+    } else {
+      document.getElementById('innhold').innerHTML = '<p class="feil">Fikk ikke hentet nyheter. Sjekk nettilgangen og prøv igjen.</p>';
+      status.textContent = '';
+    }
+  }
+}
+function lesCache() { try { return JSON.parse(localStorage.getItem('nyheter')); } catch (e) { return null; } }
+
+const cache = lesCache();
+if (cache) { render(cache.resultater); document.getElementById('status').textContent = 'Viser lagrede nyheter — oppdaterer …'; }
+lastAlt();
+</script>
+</body>
+</html>
