@@ -107,7 +107,9 @@ function fmtTid(pd) { // "2026-07-12 12:28:29" (norsk lokaltid fra rss2json)
 }
 const rens = s => { const el = document.createElement('div'); el.innerHTML = s || ''; return (el.textContent || '').trim(); };
 
-async function hent(kilde) {
+const pause = ms => new Promise(r => setTimeout(r, ms));
+
+async function hentRss2json(kilde) {
   const api = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(kilde.url);
   const r = await fetch(api, { signal: AbortSignal.timeout(20000) });
   const j = await r.json();
@@ -115,6 +117,27 @@ async function hent(kilde) {
   return j.items.filter(i => i.title && i.title.length > 3).map(i => ({
     t: rens(i.title), u: i.link, d: rens(i.description).slice(0, 180), p: i.pubDate
   }));
+}
+
+async function hentAllorigins(kilde) { // reserveløsning: rå XML via allorigins
+  const r = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(kilde.url), { signal: AbortSignal.timeout(20000) });
+  const doc = new DOMParser().parseFromString(await r.text(), 'text/xml');
+  const items = [...doc.querySelectorAll('item')];
+  if (!items.length) throw new Error('Tom feed');
+  return items.map(it => {
+    const g = t => { const e = it.querySelector(t); return e ? e.textContent.trim() : ''; };
+    const dt = new Date(g('pubDate'));
+    return { t: rens(g('title')), u: g('link'), d: rens(g('description')).slice(0, 180),
+             p: isNaN(dt) ? '' : dt.toLocaleString('sv-SE', { timeZone: 'Europe/Oslo' }) };
+  }).filter(s => s.t.length > 3);
+}
+
+async function hent(kilde) {
+  for (let i = 0; i < 3; i++) { // rss2json med retry
+    try { return await hentRss2json(kilde); }
+    catch (e) { await pause(1200 * (i + 1)); }
+  }
+  return hentAllorigins(kilde);
 }
 
 function kortHtml(sak) {
