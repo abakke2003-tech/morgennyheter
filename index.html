@@ -73,7 +73,8 @@ const DEFAULT_FEEDS = [
   {name:"VG", url:"https://www.vg.no/rss/feed"},
   {name:"DN", url:"https://services.dn.no/api/feed/rss/"},
   {name:"Budstikka", url:"https://www.budstikka.no/service/rich-rss"},
-  {name:"Morgenbladet", url:"https://news.google.com/rss/search?q=site:morgenbladet.no&hl=no&gl=NO&ceid=NO:no"}
+  {name:"Morgenbladet", url:"https://news.google.com/rss/search?q=site:morgenbladet.no&hl=no&gl=NO&ceid=NO:no"},
+  {name:"Digi.no", url:"https://www.digi.no/feeds/general.xml", tech:true}
 ];
 const MAX_ITEMS = 5;
 const TECH_RE = /\b(teknologi|tech|cyber|cybersikkerhet|datasikkerhet|IT-|hacker|hacking|dataangrep|løsepengevirus|KI|kunstig intelligens|\bAI\b|ChatGPT|digitalisering|digitale?\b|telekom|Telenor|Telia|databrudd|personvern|skytjeneste|datasenter|programvare|app\b|apper\b|smartbriller|droner?\b|forsvarsteknologi|satellitt|chip\b|halvleder|kvantedata)/i;
@@ -160,7 +161,7 @@ function render(results){
   const techItems = [];
   for(const r of results){
     if(r.items) for(const it of r.items){
-      if(TECH_RE.test(it.title+" "+(it.desc||""))) techItems.push({...it, source:r.feed.name});
+      if(r.feed.tech || TECH_RE.test(it.title+" "+(it.desc||""))) techItems.push({...it, source:r.feed.name});
     }
   }
   techItems.sort((a,b)=>new Date(b.pubDate||0)-new Date(a.pubDate||0));
