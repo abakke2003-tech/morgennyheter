@@ -1,269 +1,232 @@
 <!DOCTYPE html>
-<html lang="no">
+<html lang="nb">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Morgennyheter – torsdag 16. juli 2026</title>
+<title>Morgennyheter</title>
 <style>
-  :root {
-    --bg: #f4f6f8;
-    --card: #ffffff;
-    --text: #1a2330;
-    --muted: #5b6b7d;
-    --accent: #0b5fff;
-    --tech: #7a3ff2;
-    --border: #e2e8f0;
+  :root{
+    --bg:#f4f5f7; --card:#ffffff; --ink:#1a1d21; --muted:#5f6672;
+    --accent:#0b57d0; --accent-ink:#fff; --tech:#7c3aed; --line:#e3e6ea;
+    --radius:12px;
   }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.5;
-    padding: 24px 16px 48px;
+  @media (prefers-color-scheme: dark){
+    :root{--bg:#14161a; --card:#1e2126; --ink:#e8eaed; --muted:#9aa1ab; --line:#2c3138; --accent:#8ab4f8; --accent-ink:#14161a; --tech:#b794f6;}
   }
-  .wrap { max-width: 1100px; margin: 0 auto; }
-  header h1 { margin: 0 0 4px; font-size: 1.9rem; }
-  header p { margin: 0 0 28px; color: var(--muted); font-size: 1.05rem; }
-  section { margin-bottom: 32px; }
-  h2 {
-    font-size: 1.25rem;
-    margin: 0 0 12px;
-    padding-bottom: 6px;
-    border-bottom: 3px solid var(--accent);
-    display: inline-block;
-  }
-  .tech h2 { border-bottom-color: var(--tech); }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 12px;
-  }
-  article {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 16px;
-    box-shadow: 0 1px 3px rgba(0,0,0,.06);
-  }
-  .tech article { border-left: 4px solid var(--tech); }
-  article a {
-    color: var(--accent);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1rem;
-  }
-  .tech article a { color: var(--tech); }
-  article a:hover { text-decoration: underline; }
-  article p { margin: 6px 0 0; font-size: .9rem; color: var(--text); }
-  .meta { margin-top: 8px; font-size: .78rem; color: var(--muted); }
-  .kilde {
-    display: inline-block;
-    background: #eef1ff;
-    color: var(--tech);
-    border-radius: 4px;
-    padding: 1px 7px;
-    font-size: .72rem;
-    font-weight: 700;
-    margin-right: 6px;
-  }
-  footer { margin-top: 36px; font-size: .8rem; color: var(--muted); }
+  *{box-sizing:border-box}
+  body{margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--ink); line-height:1.45;}
+  header{padding:28px 20px 12px; max-width:1200px; margin:0 auto;}
+  h1{margin:0 0 2px; font-size:1.7rem;}
+  .date{color:var(--muted); text-transform:capitalize;}
+  .toolbar{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:14px;}
+  button{border:0; border-radius:8px; padding:9px 16px; font-size:.95rem; cursor:pointer; background:var(--accent); color:var(--accent-ink); font-weight:600;}
+  button.secondary{background:transparent; color:var(--accent); border:1px solid var(--accent); font-weight:500;}
+  button:disabled{opacity:.55; cursor:wait;}
+  .status{color:var(--muted); font-size:.85rem;}
+  #addForm{display:none; gap:8px; flex-wrap:wrap; margin-top:12px; padding:14px; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); width:100%;}
+  #addForm input{flex:1 1 180px; padding:9px 12px; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--ink); font-size:.95rem;}
+  #addForm .hint{flex-basis:100%; font-size:.8rem; color:var(--muted); margin:0;}
+  main{max-width:1200px; margin:0 auto; padding:8px 20px 48px;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:16px;}
+  section.feed{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:16px 18px;}
+  section.tech{grid-column:1 / -1; border-left:4px solid var(--tech);}
+  section h2{margin:0 0 10px; font-size:1.05rem; display:flex; align-items:center; gap:8px;}
+  section.tech h2{color:var(--tech);}
+  .badge{font-size:.7rem; background:var(--tech); color:#fff; border-radius:20px; padding:2px 8px; font-weight:600;}
+  .src-badge{font-size:.7rem; color:var(--muted); border:1px solid var(--line); border-radius:20px; padding:1px 7px; white-space:nowrap;}
+  ul{list-style:none; margin:0; padding:0;}
+  li{padding:9px 0; border-top:1px solid var(--line);}
+  li:first-child{border-top:0;}
+  li a{color:var(--ink); text-decoration:none; font-weight:600; font-size:.95rem;}
+  li a:hover{color:var(--accent); text-decoration:underline;}
+  .desc{margin:3px 0 0; font-size:.85rem; color:var(--muted);}
+  .meta{margin-top:3px; font-size:.75rem; color:var(--muted); display:flex; gap:8px; align-items:center;}
+  .removeFeed{background:none; border:0; color:var(--muted); font-size:.75rem; cursor:pointer; padding:0; text-decoration:underline; font-weight:400;}
+  .err{color:#c0392b; font-size:.85rem;}
+  .empty{color:var(--muted); font-size:.85rem; font-style:italic;}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <h1>Morgennyheter</h1>
-    <p>torsdag 16. juli 2026 · Aftenposten · VG · DN · Budstikka · Morgenbladet</p>
-  </header>
+<header>
+  <h1>Morgennyheter</h1>
+  <div class="date" id="dateLine"></div>
+  <div class="toolbar">
+    <button id="refreshBtn">&#8635; Oppdater</button>
+    <button class="secondary" id="toggleAdd">+ Legg til RSS-feed</button>
+    <button class="secondary" id="resetFeeds" style="display:none" title="Hent tilbake fjernede standardkilder">Tilbakestill kilder</button>
+    <span class="status" id="status"></span>
+  </div>
+  <form id="addForm">
+    <input id="feedName" placeholder="Navn (f.eks. NRK Beta)" required>
+    <input id="feedUrl" type="url" placeholder="https://…/rss" required>
+    <button type="submit">Legg til</button>
+    <p class="hint">Lim inn adressen til en RSS-feed. Egne feeder lagres lokalt i nettleseren din og hentes på nytt hver gang du oppdaterer.</p>
+  </form>
+</header>
+<main>
+  <div class="grid" id="grid"></div>
+</main>
+<script>
+"use strict";
+const DEFAULT_FEEDS = [
+  {name:"Aftenposten", url:"https://www.aftenposten.no/rss"},
+  {name:"VG", url:"https://www.vg.no/rss/feed"},
+  {name:"DN", url:"https://services.dn.no/api/feed/rss/"},
+  {name:"Budstikka", url:"https://www.budstikka.no/service/rich-rss"},
+  {name:"Morgenbladet", url:"https://news.google.com/rss/search?q=site:morgenbladet.no&hl=no&gl=NO&ceid=NO:no"}
+];
+const MAX_ITEMS = 5;
+const TECH_RE = /\b(teknologi|tech|cyber|cybersikkerhet|datasikkerhet|IT-|hacker|hacking|dataangrep|løsepengevirus|KI|kunstig intelligens|\bAI\b|ChatGPT|digitalisering|digitale?\b|telekom|Telenor|Telia|databrudd|personvern|skytjeneste|datasenter|programvare|app\b|apper\b|smartbriller|droner?\b|forsvarsteknologi|satellitt|chip\b|halvleder|kvantedata)/i;
 
-  <section class="tech">
-    <h2>🔒 Tech-fokus</h2>
-    <div class="grid">
-      <article>
-        <a href="https://www.aftenposten.no/norge/politikk/i/GxO9B4/spionsiktet-kineser-paagrepet-paa-gardermoen" target="_blank" rel="noopener">Spionsiktet kineser pågrepet på Gardermoen</a>
-        <p>En av de siktede i spionsaken på Odda og Andøya er pågrepet etter at han kom tilbake fra et utenlandsopphold.</p>
-        <div class="meta"><span class="kilde">Aftenposten</span>16.07 kl. 16:41</div>
-      </article>
-      <article>
-        <a href="https://www.aftenposten.no/okonomi/i/oEwOva/telenor-raste-paa-boers-nest-verste-dag-noen-gang" target="_blank" rel="noopener">Telenor raste på børs – nest verste dag noen gang</a>
-        <p>Telenor falt nær 12 prosent torsdag etter at de la fram et resultat under forventningene.</p>
-        <div class="meta"><span class="kilde">Aftenposten</span>16.07 kl. 16:39</div>
-      </article>
-      <article>
-        <a href="https://www.aftenposten.no/e24/i/L4kR11" target="_blank" rel="noopener">Kongsberg med kontrakt til 100 millioner dollar</a>
-        <p>Kongsberg skal levere flere JSM-missiler til det amerikanske luftforsvaret, melder selskapet i en pressemelding.</p>
-        <div class="meta"><span class="kilde">Aftenposten/E24</span>16.07 kl. 15:22</div>
-      </article>
-      <article>
-        <a href="https://www.budstikka.no/advarer-mot-falsk-veldedig-organisasjon/s/5-55-2328088" target="_blank" rel="noopener">Advarer mot falsk veldedig organisasjon</a>
-        <p>Flere titalls personer skal ha vipset tusener av kroner til en falsk veldedig organisasjon. Politiet advarer mot digital svindel.</p>
-        <div class="meta"><span class="kilde">Budstikka</span>16.07 kl. 15:30</div>
-      </article>
-      <article>
-        <a href="https://www.aftenposten.no/verden/i/JO78kJ/gateprotester-i-flere-byer-etter-ukrainske-regjeringsendringer" target="_blank" rel="noopener">Gateprotester etter ukrainske regjeringsendringer</a>
-        <p>Utskiftingen av forsvarsminister Mykhajlo Fedorov – tidligere digitaliseringsminister og arkitekten bak Ukrainas digitale forvaltning – vekker protester.</p>
-        <div class="meta"><span class="kilde">Aftenposten</span>16.07 kl. 14:18</div>
-      </article>
-      <article>
-        <a href="https://www.aftenposten.no/verden/i/QJw4yP/starmer-lovet-stoette-til-ukrainsk-flykjoep-under-avskjedsbesoeket-i-kyiv" target="_blank" rel="noopener">Starmer lovet støtte til ukrainsk flykjøp i Kyiv</a>
-        <p>Med britisk pengestøtte i ryggen skal svenske Gripen-fly styrke Ukrainas forsvar.</p>
-        <div class="meta"><span class="kilde">Aftenposten</span>16.07 kl. 15:23</div>
-      </article>
-    </div>
-  </section>
+const store = {
+  get(){ try{return JSON.parse(localStorage.getItem("customFeeds")||"[]")}catch(e){return[]} },
+  set(v){ try{localStorage.setItem("customFeeds", JSON.stringify(v))}catch(e){} },
+  hidden(){ try{return JSON.parse(localStorage.getItem("hiddenFeeds")||"[]")}catch(e){return[]} },
+  setHidden(v){ try{localStorage.setItem("hiddenFeeds", JSON.stringify(v))}catch(e){} }
+};
 
-  <section>
-    <h2>Aftenposten</h2>
-    <div class="grid">
-      <article>
-        <a href="https://www.aftenposten.no/norge/i/k0dgmv/mulig-drukningsulykke-i-vestfold" target="_blank" rel="noopener">Mulig drukningsulykke i Vestfold</a>
-        <p>Et redningshelikopter har rykket ut til det som beskrives som en mulig drukningsulykke i Vestfold.</p>
-        <div class="meta">16.07 kl. 16:54</div>
-      </article>
-      <article>
-        <a href="https://www.aftenposten.no/norge/i/7pBzR3/mann-doede-etter-aa-ha-falt-over-bord-i-lofoten" target="_blank" rel="noopener">Mann døde etter å ha falt over bord i Lofoten</a>
-        <p>En mann er død etter at han falt over bord fra en fritidsbåt i Vestvågøy i Lofoten.</p>
-        <div class="meta">16.07 kl. 16:53</div>
-      </article>
-      <article>
-        <a href="https://www.aftenposten.no/verden/i/8pO0E2/kona-til-spanias-statsminister-for-retten-tiltalt-for-korrupsjon" target="_blank" rel="noopener">Kona til Spanias statsminister for retten, tiltalt for korrupsjon</a>
-        <p>Begona Gómez, kona til Spanias statsminister Pedro Sánchez, må møte i retten, tiltalt for underslag og ulovlig påvirkning.</p>
-        <div class="meta">16.07 kl. 16:51</div>
-      </article>
-      <article>
-        <a href="https://www.aftenposten.no/norge/politikk/i/GxO9B4/spionsiktet-kineser-paagrepet-paa-gardermoen" target="_blank" rel="noopener">Spionsiktet kineser pågrepet på Gardermoen</a>
-        <p>En av de siktede i spionsaken på Odda og Andøya er pågrepet etter at han kom tilbake fra et utenlandsopphold.</p>
-        <div class="meta">16.07 kl. 16:41</div>
-      </article>
-      <article>
-        <a href="https://www.aftenposten.no/okonomi/i/oEwOva/telenor-raste-paa-boers-nest-verste-dag-noen-gang" target="_blank" rel="noopener">Telenor raste på børs – nest verste dag noen gang</a>
-        <p>Telenor falt nær 12 prosent torsdag etter at de la fram et resultat under forventningene.</p>
-        <div class="meta">16.07 kl. 16:39</div>
-      </article>
-    </div>
-  </section>
+function feeds(){
+  const hidden = store.hidden();
+  return DEFAULT_FEEDS.filter(f=>!hidden.includes(f.url)).concat(store.get());
+}
 
-  <section>
-    <h2>VG</h2>
-    <div class="grid">
-      <article>
-        <a href="https://www.vg.no/sport/i/8pO0XQ/marginene-mot-hovland-natt-og-dag" target="_blank" rel="noopener">Marginene mot Hovland: – Natt og dag</a>
-        <div class="meta">16.07 kl. 17:09</div>
-      </article>
-      <article>
-        <a href="https://www.vg.no/sport/i/8pO0RQ/dette-sa-viktor-hovland-etter-foerste-dag-av-british-open" target="_blank" rel="noopener">Dette sier Viktor Hovland etter første dag av British Open</a>
-        <div class="meta">16.07 kl. 16:53</div>
-      </article>
-      <article>
-        <a href="https://www.vg.no/nyheter/i/V65JGJ/kona-til-spanias-statsminister-for-retten-tiltalt-for-korrupsjon" target="_blank" rel="noopener">Kona til Spanias statsminister for retten, tiltalt for korrupsjon</a>
-        <p>Begona Gómez, kona til Spanias statsminister Pedro Sánchez, må møte i retten, tiltalt for underslag og ulovlig påvirkning.</p>
-        <div class="meta">16.07 kl. 16:49</div>
-      </article>
-      <article>
-        <a href="https://www.vg.no/nyheter/i/n10jwm/mulig-drukningsulykke-i-sandefjord-livreddende-foerstehjelp-paagaar" target="_blank" rel="noopener">Drukningsulykke i Sandefjord – livreddende førstehjelp pågår</a>
-        <p>Redningshelikopteret er på stedet, opplyser politiet.</p>
-        <div class="meta">16.07 kl. 16:46</div>
-      </article>
-      <article>
-        <a href="https://www.vg.no/nyheter/i/gk49LB/zelenskyjs-tabbe" target="_blank" rel="noopener">Zelenskyjs tabbe</a>
-        <div class="meta">16.07 kl. 16:35</div>
-      </article>
-    </div>
-  </section>
+function esc(s){ const d=document.createElement("div"); d.textContent=s==null?"":String(s); return d.innerHTML; }
+function stripHtml(s){ const d=document.createElement("div"); d.innerHTML=s||""; return (d.textContent||"").trim(); }
 
-  <section>
-    <h2>DN</h2>
-    <div class="grid">
-      <article>
-        <a href="https://www.dn.no/d2/arkitektur/arkitekturopproret/hyttebygging/hyttemarkedet/paret-ga-arkitekt-knut-hjeltnes-helt-frie-toyler/2-1-2010470" target="_blank" rel="noopener">Paret ga arkitekt Knut Hjeltnes helt frie tøyler</a>
-        <p>Nå kaller de hytta «Si ja til Knut».</p>
-        <div class="meta">16.07 kl. 16:09</div>
-      </article>
-      <article>
-        <a href="https://www.dn.no/utenriks/donald-trump/usa/trump-skal-tale-i-natt-bekymring-blant-partifeller/2-1-2017744" target="_blank" rel="noopener">Trump skal tale i natt – bekymring blant partifeller</a>
-        <p>Trump har varslet store nyheter, men vil ikke si noe mer om sin tale til nasjonen i kveld. Det vekker bekymring.</p>
-        <div class="meta">16.07 kl. 15:59</div>
-      </article>
-      <article>
-        <a href="https://www.dn.no/d2/reise/hellas/reise/mat/her-booker-gjestene-bord-for-fly-og-hotell/2-1-2004139" target="_blank" rel="noopener">Her booker gjestene bord før fly og hotell</a>
-        <p>Sifnos har i århundrer vært grekernes gastronomiske hemmelighet. Nå skal «alle» dit.</p>
-        <div class="meta">16.07 kl. 15:47</div>
-      </article>
-      <article>
-        <a href="https://www.dn.no/d2/smak/vin/grunder/drikke/ville-heller-lage-alkoholfri-vin-enn-a-jobbe-i-mckinsey/2-1-2006098" target="_blank" rel="noopener">Ville heller lage alkoholfri vin enn å jobbe i McKinsey</a>
-        <p>Miriam Rølland drakk så mye vin at hun var nødt til å finne et alkoholfritt alternativ.</p>
-        <div class="meta">16.07 kl. 15:47</div>
-      </article>
-      <article>
-        <a href="https://www.dn.no/d2/tingenes-tilstand/anne-hilde-neset/henie-onstad-kunstsenter/kunst/-livet-kunne-vare-en-slags-musikkvideo/2-1-1999896" target="_blank" rel="noopener">– Livet kunne være en slags musikkvideo</a>
-        <p>Da hun fikk se MTV for første gang på 80-tallet, skjedde det noe med hjernen til Henie Onstad-direktøren.</p>
-        <div class="meta">16.07 kl. 15:47</div>
-      </article>
-    </div>
-  </section>
+function cleanTitle(t, feedName){
+  t = (t||"").trim();
+  if(feedName==="Morgenbladet") t = t.replace(/\s*-\s*Morgenbladet\s*$/,"");
+  return t;
+}
 
-  <section>
-    <h2>Budstikka</h2>
-    <div class="grid">
-      <article>
-        <a href="https://www.budstikka.no/full-krasj-om-porsche-bygget-ma-betale-millioner/s/5-55-2327213" target="_blank" rel="noopener">Full krasj om Porsche-bygget – må betale millioner</a>
-        <p>Da tidsplanen sprakk med et år, ble det full krasj mellom gårdeier og entreprenør. Nå har lagmannsretten parkert millionkrangelen.</p>
-        <div class="meta">16.07 kl. 16:25</div>
-      </article>
-      <article>
-        <a href="https://www.budstikka.no/advarer-mot-falsk-veldedig-organisasjon/s/5-55-2328088" target="_blank" rel="noopener">Advarer mot falsk veldedig organisasjon</a>
-        <p>Flere titalls personer skal ha vipset tusener av kroner til en falsk veldedig organisasjon. Nå advarer politiet.</p>
-        <div class="meta">16.07 kl. 15:30</div>
-      </article>
-      <article>
-        <a href="https://www.budstikka.no/rykket-ut-til-trafikkulykke/s/5-55-2327956" target="_blank" rel="noopener">Trafikkulykke: – Falt over panseret</a>
-        <p>En personbil og syklist har hatt et sammenstøt på Slependen.</p>
-        <div class="meta">16.07 kl. 14:16</div>
-      </article>
-      <article>
-        <a href="https://www.budstikka.no/kollisjon-mellom-sykkel-og-elsparkesykkel/s/5-55-2327890" target="_blank" rel="noopener">Kollisjon mellom sykkel og elsparkesykkel</a>
-        <p>Politiet har rykket ut til et trafikkuhell ved Valler videregående skole.</p>
-        <div class="meta">16.07 kl. 13:44</div>
-      </article>
-      <article>
-        <a href="https://www.budstikka.no/na-reiser-kjendisdotrenes-hus-seg-pa-pappas-tomt/s/5-55-2327755" target="_blank" rel="noopener">Nå reiser kjendisdøtrenes hus seg – på pappas tomt</a>
-        <p>I eksklusive Gimleveien er villabyggingen for alvor i gang.</p>
-        <div class="meta">16.07 kl. 13:00</div>
-      </article>
-    </div>
-  </section>
+function fmtTime(iso){
+  if(!iso) return "";
+  const d = new Date((iso||"").replace(" ","T"));
+  if(isNaN(d)) return "";
+  return d.toLocaleString("nb-NO",{weekday:"short", hour:"2-digit", minute:"2-digit", day:"numeric", month:"short"});
+}
 
-  <section>
-    <h2>Morgenbladet</h2>
-    <div class="grid">
-      <article>
-        <a href="https://news.google.com/rss/articles/CBMimwFBVV95cUxNVFRwaDlHMTQ1eWpTX2xQYk1LY3Zndk1PbVZTNFlRN05GU2Q4ZFhTLVM0cWczOEpxelpOXzBKY3FSSXZiVnpwM0tpdkVSenBFNjAxdmN0TzUzZVZhZHRHUjh1UVR3eVk3MlItYllJQ2hpWDNxVXBXcUZ1ZnFCaEZjT3FsbDczaGIxTDVwaXZPem1xbTIyUWswcDF2WQ?oc=5" target="_blank" rel="noopener">(+) På fredager er brevduen Freddy på jobb som fredsdue</a>
-        <div class="meta">16.07 kl. 08:41</div>
-      </article>
-      <article>
-        <a href="https://news.google.com/rss/articles/CBMi1AFBVV95cUxNQ0tKalByTHJOQzd6TVdUTkRhdm02RWctUGJKQzNJdjlQSkFjclUtSzk5SDhGaTFiS3RrNmI0eGx5UGd0RmF0MloyZ1VCcFFJVnMxb1U0bDExeXg4ZElrS1ZabU95eGFSQldqUmhYYWg5dVYyTzFfMUpwallrZVFsSXkzdGgyUW13ZWZ2ZjdvcURTRXp4WURCYTJ6ZHFpNVdkUWNlNWZsZnk5bnVDMVIxM1VCOHFLUHNFR3ZOWjktNUNTQzNNWXRNWHNfSF8zZkNzRnMwaw?oc=5" target="_blank" rel="noopener">(+) Støre fikk revolver av Erdogan, men lot den ligge igjen i Ankara</a>
-        <div class="meta">16.07 kl. 04:15</div>
-      </article>
-      <article>
-        <a href="https://news.google.com/rss/articles/CBMilAFBVV95cUxQNU94czZvcDJlclU4UThRbEJWT1UwTUxJN2RtUHhjWjc0VHpQOFB0SjJ5MFE5ZHh5ODRDUGxrV0M0SjFtRWxCVWVUenZvSjJtWUNaMDJxRG5tRVQ1alQtVVROdEgyck5pVkdsVEdMYUVzWlp5S2RrOTlRZHlKMjB6X0pobldubGJvYURkeUVNVVI2emtI?oc=5" target="_blank" rel="noopener">Rødts Sofia Rana: – Vanskelig å gjøre opprør mot en konge som vår</a>
-        <div class="meta">16.07 kl. 04:05</div>
-      </article>
-      <article>
-        <a href="https://news.google.com/rss/articles/CBMiXkFVX3lxTE80MFU0MEg2NzNxeEptWEJtamplUFJsYkxUNzBSb3d1TnhnTXNnNi1pTnk3YmVmS19vamJvRTZzeVFTb1ZZQkU0X3VoWV9XckR5VGRwdHVBWGUzRDBFNVE?oc=5" target="_blank" rel="noopener">Justine Nguyen</a>
-        <div class="meta">16.07 kl. 00:52</div>
-      </article>
-      <article>
-        <a href="https://news.google.com/rss/articles/CBMijAFBVV95cUxPUVg4M2JXbXcwWl9RVGVrTFkzUGY3YmI1cWxfQXJhc09CZFo0Z2I5aVpfU3h5em1tdG5LdTVPX3I5cWNSQVk5VE5hYkFvcV9POFRnYnlIZkN2TUNtNzVicnVOZVlrZC1ocmxQZm5NazNRZWJna0EyR2tXNGUtam9fSlV0MVd1QTdvQlhFZQ?oc=5" target="_blank" rel="noopener">Odysseen: Fabelaktige scener i Nolans nye filmepos</a>
-        <div class="meta">15.07 kl. 18:01</div>
-      </article>
-    </div>
-  </section>
+async function fetchFeed(feed){
+  const api = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(feed.url);
+  const ctrl = new AbortController();
+  const timer = setTimeout(()=>ctrl.abort(), 20000);
+  try{
+    // Prøv direkte først (noen feeder tillater det), ellers via rss2json.
+    let items = null;
+    try{
+      const r = await fetch(feed.url, {signal:ctrl.signal});
+      if(r.ok){
+        const xml = new DOMParser().parseFromString(await r.text(), "text/xml");
+        const nodes = [...xml.querySelectorAll("item")];
+        if(nodes.length){
+          items = nodes.map(n=>({
+            title: n.querySelector("title")?.textContent,
+            link: n.querySelector("link")?.textContent,
+            pubDate: n.querySelector("pubDate")?.textContent,
+            description: n.querySelector("description")?.textContent
+          }));
+        }
+      }
+    }catch(e){ /* CORS – fall tilbake til rss2json */ }
+    if(!items){
+      const r = await fetch(api, {signal:ctrl.signal});
+      const j = await r.json();
+      if(j.status!=="ok") throw new Error(j.message||"rss2json-feil");
+      items = j.items||[];
+    }
+    items.sort((a,b)=>new Date(b.pubDate||0)-new Date(a.pubDate||0));
+    return {feed, items: items.slice(0, feed.custom?8:12).map(i=>({
+      title: cleanTitle(i.title, feed.name),
+      link: i.link,
+      pubDate: i.pubDate,
+      desc: stripHtml(i.description).slice(0,180)
+    }))};
+  }catch(e){
+    return {feed, error: e.name==="AbortError" ? "Tidsavbrudd" : String(e.message||e)};
+  }finally{ clearTimeout(timer); }
+}
 
-  <footer>
-    Generert automatisk 16. juli 2026 · Kilder: Aftenposten (RSS), VG (RSS), DN (RSS), Budstikka (RSS), Morgenbladet (via Google News). (+) = betalingsmur. Tider i norsk sommertid.
-  </footer>
-</div>
+function itemHtml(it, withSource){
+  return `<li>
+    <a href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.title)}</a>
+    ${it.desc?`<p class="desc">${esc(it.desc)}${it.desc.length>=180?"…":""}</p>`:""}
+    <div class="meta">${withSource?`<span class="src-badge">${esc(it.source)}</span>`:""}<span>${esc(fmtTime(it.pubDate))}</span></div>
+  </li>`;
+}
+
+function render(results){
+  const grid = document.getElementById("grid");
+  // Tech-fokus på tvers av kilder
+  const techItems = [];
+  for(const r of results){
+    if(r.items) for(const it of r.items){
+      if(TECH_RE.test(it.title+" "+(it.desc||""))) techItems.push({...it, source:r.feed.name});
+    }
+  }
+  techItems.sort((a,b)=>new Date(b.pubDate||0)-new Date(a.pubDate||0));
+
+  let html = `<section class="feed tech"><h2>Tech-fokus <span class="badge">IT &amp; cyber</span></h2>`;
+  html += techItems.length
+    ? `<ul>${techItems.slice(0,8).map(i=>itemHtml(i,true)).join("")}</ul>`
+    : `<p class="empty">Ingen tydelige tech-saker i feedene akkurat nå.</p>`;
+  html += `</section>`;
+
+  for(const r of results){
+    html += `<section class="feed"><h2>${esc(r.feed.name)} <button class="removeFeed" data-url="${esc(r.feed.url)}" data-custom="${r.feed.custom?1:0}" title="Fjern denne kilden">fjern</button></h2>`;
+    if(r.error) html += `<p class="err">Kunne ikke hente: ${esc(r.error)}</p>`;
+    else if(!r.items.length) html += `<p class="empty">Ingen saker funnet.</p>`;
+    else html += `<ul>${r.items.slice(0,MAX_ITEMS).map(i=>itemHtml(i,false)).join("")}</ul>`;
+    html += `</section>`;
+  }
+  grid.innerHTML = html;
+  grid.querySelectorAll(".removeFeed").forEach(b=>b.addEventListener("click",()=>{
+    if(b.dataset.custom==="1"){
+      store.set(store.get().filter(f=>f.url!==b.dataset.url));
+    }else{
+      const h = store.hidden();
+      if(!h.includes(b.dataset.url)) h.push(b.dataset.url);
+      store.setHidden(h);
+    }
+    refresh();
+  }));
+  document.getElementById("resetFeeds").style.display = store.hidden().length ? "" : "none";
+}
+
+let busy = false;
+async function refresh(){
+  if(busy) return; busy = true;
+  const btn = document.getElementById("refreshBtn"), st = document.getElementById("status");
+  btn.disabled = true; st.textContent = "Henter nyheter …";
+  try{
+    const results = await Promise.all(feeds().map(fetchFeed));
+    render(results);
+    st.textContent = "Sist oppdatert " + new Date().toLocaleTimeString("nb-NO",{hour:"2-digit",minute:"2-digit"});
+  }catch(e){ st.textContent = "Noe gikk galt: " + e; }
+  finally{ btn.disabled = false; busy = false; }
+}
+
+document.getElementById("dateLine").textContent =
+  new Date().toLocaleDateString("nb-NO",{weekday:"long", day:"numeric", month:"long", year:"numeric"});
+document.getElementById("refreshBtn").addEventListener("click", refresh);
+document.getElementById("resetFeeds").addEventListener("click", ()=>{ store.setHidden([]); refresh(); });
+document.getElementById("toggleAdd").addEventListener("click", ()=>{
+  const f = document.getElementById("addForm");
+  f.style.display = f.style.display==="flex" ? "none" : "flex";
+});
+document.getElementById("addForm").addEventListener("submit", e=>{
+  e.preventDefault();
+  const name = document.getElementById("feedName").value.trim();
+  const url  = document.getElementById("feedUrl").value.trim();
+  if(!name || !url) return;
+  const list = store.get();
+  if(list.some(f=>f.url===url) || DEFAULT_FEEDS.some(f=>f.url===url)) return;
+  list.push({name, url, custom:true});
+  store.set(list);
+  e.target.reset();
+  document.getElementById("addForm").style.display = "none";
+  refresh();
+});
+refresh();
+</script>
 </body>
 </html>
